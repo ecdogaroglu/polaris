@@ -23,7 +23,7 @@ POLARIS is a multi-agent reinforcement learning framework for studying **strateg
 
 ### Theoretical Foundation
 
-POLARIS introduces **Partially Observable Active Markov Games (POAMGs)**, extending traditional multi-agent frameworks to handle strategic learning under partial observability. Key theoretical contributions include:
+POLARIS introduces **Partially Observable Active Markov Games (POAMGs)**, extending [FURTHER](https://github.com/dkkim93/further) to handle strategic learning under partial observability. Key theoretical contributions include:
 
 - **Convergence Guarantees**: Stochastically stable distributions ensure well-defined limiting behavior
 - **Policy Gradient Theorems**: Novel gradients for belief-conditioned policies in non-stationary environments  
