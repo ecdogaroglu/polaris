@@ -40,7 +40,7 @@ setup(
     name="polaris-marl",
     version=get_version(),
     author="Ege Can Doğaroğlu",
-    author_email="ege.dogaroglu@example.com",  # Update with actual email
+    author_email="ecdogaroglu@gmail.com",  # Update with actual email
     description="POLARIS: Partially Observable Learning with Active Reinforcement In Social Environments",
     long_description=long_description,
     long_description_content_type="text/markdown",
