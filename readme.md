@@ -72,6 +72,21 @@ Our research reveals several important insights about strategic social learning:
 
 ### Installation
 
+**Option 1: Docker (Recommended)**
+```bash
+# Build and run with Docker Compose
+docker-compose up -d polaris
+
+# Execute experiments in the container
+docker exec -it polaris-research python experiments/brandl_sweep.py
+docker exec -it polaris-research polaris-simulate --environment-type brandl --num-agents 5
+
+# Optional: Run Jupyter notebook for interactive development
+docker-compose up -d jupyter
+# Access at http://localhost:8889
+```
+
+**Option 2: Direct Installation**
 ```bash
 # Basic installation
 pip install polaris-marl

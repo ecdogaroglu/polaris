@@ -7,7 +7,7 @@ environments with theoretical foundations and practical implementations.
 
 __version__ = "2.0.2"
 __author__ = "Ege Can Doğaroğlu"
-__email__ = "ege.dogaroglu@example.com"
+__email__ = "ecdogaroglu@gmail.com"
 __license__ = "MIT"
 __description__ = (
     "POLARIS: Partially Observable Learning with Active Reinforcement In Social Environments"

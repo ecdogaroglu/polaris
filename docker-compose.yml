@@ -1,0 +1,38 @@
+services:
+  polaris:
+    build: .
+    container_name: polaris-research
+    volumes:
+      # Mount results and experiments directories
+      - ./results:/app/results
+      - ./exp:/app/exp
+      # Mount source code for development (optional)
+      - ./polaris:/app/polaris
+      - ./experiments:/app/experiments
+    environment:
+      - PYTHONPATH=/app
+      - CUDA_VISIBLE_DEVICES=0
+    # For GPU support (uncomment if you have NVIDIA Docker runtime)
+    # runtime: nvidia
+    # Add this to environment section above for GPU:
+    # - NVIDIA_VISIBLE_DEVICES=all
+    ports:
+      - "8888:8888"  # For Jupyter notebooks if needed
+    command: >
+      bash -c "echo 'POLARIS container is ready. Use: docker exec -it polaris-research bash' && sleep infinity"
+
+  # Optional: Jupyter notebook service for interactive development
+  jupyter:
+    build: .
+    container_name: polaris-jupyter
+    volumes:
+      - ./results:/app/results
+      - ./exp:/app/exp
+      - ./polaris:/app/polaris
+      - ./experiments:/app/experiments
+      - ./docs:/app/docs
+    ports:
+      - "8889:8888"
+    environment:
+      - PYTHONPATH=/app
+    command: bash -c "pip install jupyter && jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token=''"

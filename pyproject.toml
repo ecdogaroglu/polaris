@@ -6,13 +6,13 @@ build-backend = "setuptools.build_meta"
 name = "polaris-marl"
 dynamic = ["version"]
 description = "POLARIS: Partially Observable Learning with Active Reinforcement In Social Environments"
-readme = "README.md"
+readme = "readme.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Ege Can Doğaroğlu", email = "ege.dogaroglu@example.com"}
+    {name = "Ege Can Doğaroğlu", email = "ecdogaroglu@gmail.com"}
 ]
 maintainers = [
-    {name = "Ege Can Doğaroğlu", email = "ege.dogaroglu@example.com"}
+    {name = "Ege Can Doğaroğlu", email = "ecdogaroglu@gmail.com"}
 ]
 keywords = [
     "multi-agent",

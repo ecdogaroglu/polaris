@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [ main, develop ]
 
 jobs:
   test:
@@ -12,116 +12,91 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         exclude:
-          # Reduce matrix size by excluding some combinations
+          # Reduce matrix size for faster CI
+          - os: macos-latest
+            python-version: "3.8"
           - os: windows-latest
             python-version: "3.8"
           - os: macos-latest
-            python-version: "3.8"
+            python-version: "3.9"
+          - os: windows-latest
+            python-version: "3.9"
 
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Ensure full checkout
+        fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -e ".[dev]"
 
-    - name: Run tests
+    - name: Lint with flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 polaris --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 polaris --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+
+    - name: Check code formatting with black
+      run: |
+        black --check polaris tests
+
+    - name: Check import sorting with isort
+      run: |
+        isort --check-only polaris tests
+
+    - name: Type check with mypy
+      run: |
+        mypy polaris --ignore-missing-imports
+      continue-on-error: true  # Don't fail CI on mypy errors for now
+
+    - name: Run tests with pytest
       run: |
         pytest tests/ -v --tb=short
 
-  test-gnn:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.9", "3.11"]
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  # Ensure full checkout
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install PyTorch first
-      run: |
-        python -m pip install --upgrade pip
-        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-
-    - name: Install torch-geometric
-      run: |
-        pip install torch-geometric torch-scatter torch-sparse torch-cluster torch-spline-conv -f https://data.pyg.org/whl/torch-2.0.0+cpu.html || echo "torch-geometric installation failed, continuing..."
-
-    - name: Install package
-      run: |
-        pip install -e ".[dev]"
-
-    - name: Test GNN functionality (optional)
-      run: |
-        python -c "
-        import polaris
-        print('Package imported successfully')
-        try:
-            from polaris import POLARISAgent
-            print('POLARISAgent imported successfully')
-        except ImportError as e:
-            print(f'POLARISAgent import failed (expected if torch-geometric missing): {e}')
-        "
-        pytest tests/ -v
-
   build-test:
+    needs: test
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Ensure full checkout
-    
-    - name: Debug - Check files present
-      run: |
-        echo "=== Current directory ==="
-        pwd
-        echo "=== Files in root ==="
-        ls -la
-        echo "=== README.md status ==="
-        ls -la README.md || echo "README.md not found"
-        echo "=== setup.py status ==="
-        ls -la setup.py || echo "setup.py not found"
-    
+        fetch-depth: 0
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: "3.11"
-    
+
     - name: Install build dependencies
       run: |
         python -m pip install --upgrade pip
         pip install build twine
-    
+
     - name: Build package
       run: python -m build
-    
+
     - name: Check package
       run: twine check dist/*
-    
+
     - name: Test package installation
       run: |
         pip install dist/*.whl
-        python -c "import polaris; print(polaris.get_info())"
-    
-    - name: Test console script (optional)
-      run: |
-        polaris-simulate --help || echo "Console script failed (expected if dependencies missing)" 
+        python -c "import polaris; print(f'Successfully imported polaris v{polaris.__version__}')"

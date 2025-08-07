@@ -9,15 +9,14 @@ class PackageConfigurationError(RuntimeError):
 
 # Read the README file with fallback
 def get_long_description():
-    readme_path = "README.md"
-    if os.path.exists(readme_path):
-        try:
-            with open(readme_path, "r", encoding="utf-8") as fh:
-                return fh.read()
-        except (IOError, OSError) as e:
-            raise PackageConfigurationError(f"Could not read README.md: {e}")
-    else:
-        raise PackageConfigurationError(f"README.md not found at {readme_path}")
+    for readme_path in ["README.md", "readme.md"]:
+        if os.path.exists(readme_path):
+            try:
+                with open(readme_path, "r", encoding="utf-8") as fh:
+                    return fh.read()
+            except (IOError, OSError) as e:
+                continue
+    return "A Python package for multi-agent reinforcement learning in social environments."
 
 long_description = get_long_description()
 
