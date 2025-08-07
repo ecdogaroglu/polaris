@@ -5,7 +5,7 @@ A comprehensive multi-agent reinforcement learning framework for strategic socia
 environments with theoretical foundations and practical implementations.
 """
 
-__version__ = "2.0.2"
+__version__ = "2.0.3"
 __author__ = "Ege Can Doğaroğlu"
 __email__ = "ecdogaroglu@gmail.com"
 __license__ = "MIT"
